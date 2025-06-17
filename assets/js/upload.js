@@ -276,34 +276,35 @@ $(document).ready(function () {
             </div>
         `);
 
+    // 通用插入函数
+    function insertContent(content) {
+      // 优先级：vditor > editor > 原生编辑器
+      if (window.vditor) {
+        // 优先vditor
+        window.vditor.insertValue(content);
+      } else {
+        // editor.md
+        const editor = $('.CodeMirror')[0]?.CodeMirror;
+        if (editor) {
+          editor.replaceSelection(content);
+          editor.focus();
+        } else {
+          // 原生编辑器
+          const textarea = $('textarea[name="text"]');
+          textarea.focus().insert({ text: content });
+        }
+      }
+    }
+
     // 绑定Markdown插入事件
-    $item.find(".insert-md").click(function () {
-      var text = `\n![${filename}](${url})\n`;
-      // 获取Editor.md实例
-      var editor = $('.CodeMirror')[0] ? $('.CodeMirror')[0].CodeMirror : null;
-      if (editor) {
-        // CodeMirrorAPI插入
-        editor.replaceSelection(text);
-        editor.focus(); // 光标回正
-      } else {
-        // 原生编辑器回退
-        var textarea = $('textarea[name="text"]');
-        textarea.focus().insert({ text: text });
-      }
+    $item.find(".insert-md").click(function() {
+      insertContent(`\n![${filename}](${url})\n`);
     });
-    // 绑定HTML插入事件（同上）
-    $item.find(".insert-html").click(function () {
-      var text = `\n<img src="${url}" alt="${filename}" title="${filename}"${
-        width && height ? ` width="${width}" height="${height}"` : ""
-      }>\n`;
-      var editor = $('.CodeMirror')[0] ? $('.CodeMirror')[0].CodeMirror : null;
-      if (editor) {
-        editor.replaceSelection(text);
-        editor.focus();
-      } else {
-        var textarea = $('textarea[name="text"]');
-        textarea.focus().insert({ text: text });
-      }
+
+    // 绑定HTML插入事件
+    $item.find(".insert-html").click(function() {
+      const sizeAttr = width && height ? ` width="${width}" height="${height}"` : "";
+      insertContent(`\n<img src="${url}" alt="${filename}" title="${filename}"${sizeAttr}>\n`);
     });
 
     // 绑定删除事件
