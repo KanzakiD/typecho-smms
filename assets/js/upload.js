@@ -276,27 +276,30 @@ $(document).ready(function () {
             </div>
         `);
 
-    // 绑定 Markdown 插入事件
+    // 绑定Markdown插入事件
     $item.find(".insert-md").click(function () {
       var text = `\n![${filename}](${url})\n`;
-
-      if (window.vditor) {
-        window.vditor.insertValue(text);
+      // 获取Editor.md实例
+      var editor = $('.CodeMirror')[0] ? $('.CodeMirror')[0].CodeMirror : null;
+      if (editor) {
+        // CodeMirrorAPI插入
+        editor.replaceSelection(text);
+        editor.focus(); // 光标回正
       } else {
-        // 如果找不到 vditor 实例，回退到原来的 textarea 插入方式
+        // 原生编辑器回退
         var textarea = $('textarea[name="text"]');
         textarea.focus().insert({ text: text });
       }
     });
-
-    // 绑定 HTML 插入事件
+    // 绑定HTML插入事件（同上）
     $item.find(".insert-html").click(function () {
       var text = `\n<img src="${url}" alt="${filename}" title="${filename}"${
         width && height ? ` width="${width}" height="${height}"` : ""
       }>\n`;
-
-      if (window.vditor) {
-        window.vditor.insertValue(text);
+      var editor = $('.CodeMirror')[0] ? $('.CodeMirror')[0].CodeMirror : null;
+      if (editor) {
+        editor.replaceSelection(text);
+        editor.focus();
       } else {
         var textarea = $('textarea[name="text"]');
         textarea.focus().insert({ text: text });
